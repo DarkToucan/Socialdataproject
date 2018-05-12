@@ -1,35 +1,1478 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>HTML Tutorial</title>
-		<style type="text/css">
-		p{
-			font-size: 24px;
-			font-weight: bold;
-			font-family: sans-serif
-		}
-		</style>
-		<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
-	</head>
-<body>
-	<script type="text/javascript">
-	var dataset = [5,10,15,20,25];
-	d3.select("body").selectAll("p").data(dataset).enter().append("p")
-	.text(function(d){
-		return "i can count to " + d})
-	.style("color",function(d){
-		if(d > 15){return "red";}
-		else{return "black";}
-	});
+  <head>
+      <meta charset="utf-8">
+      <title>London traffic accidents</title>
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/3/w3.css">
+      <script type="text/javascript" src="d3.js"></script>
+      <script type="text/javascript" src="d3-tip.js"></script>
+      <style type="text/css">
 
-	</script>
-	<svg width="280" height="140">
-			<rect x="0" y="60" width="80" height="80" fill="purple" opacity="1" stroke="gray" stroke-width="2"/> 
-			<rect x="50" y="45" width="80" height="80" fill="blue" opacity="0.8" stroke="gray" stroke-width="2"/>
-			<rect x="100" y="30" width="80" height="80" fill="green" opacity="0.6" stroke="gray" stroke-width="2"/>
-			<rect x="150" y="15" width="80" height="80" fill="yellow" opacity="0.4" stroke="gray" stroke-width="2"/>
-			<rect x="200" y="0" width="80" height="80" fill="red" opacity="0.2" stroke="gray" stroke-width="2"/>
-		</svg>
-</body>
+      html {
+        overflow: auto;
+      }
+
+      body {
+            position: absolute;
+            overflow: hidden;
+      }
+
+      div {
+        margin-bottom: 10px;
+      }
+      
+      .pan rect,
+      .zoom rect {
+        fill: black;
+        opacity: 0.2;
+      }
+      
+      .zoom rect {
+        rx: 5;  /* Rounded corners */
+        ry: 5;
+      }
+      .pan text,
+      .zoom text {
+        fill: black;
+        font-size: 18px;
+        text-anchor: middle;
+      }
+      .pan:hover rect,
+      .pan:hover text,
+      .zoom:hover rect,
+      .zoom:hover text {
+        fill: blue;
+      }
+      svg {
+          float: left;
+      }
+      .pie {
+        margin: 20px;
+      }
+      .legend {
+        float: left;
+        font-family: "Verdana";
+        font-size: .7em;
+      }
+
+      .pie text {
+        font-family: "Verdana";
+        fill: #000;
+      }
+
+      .pie .name-text{
+        font-size: .8em;
+      }
+
+      .pie .value-text{
+        font-size: 3em;
+      }
+      .speech-bubble {
+          background-color: #f8f8f8;
+          border: 1px solid #c8c8c8;
+          border-radius: 5px;
+          width: 200px;
+          text-align: center;
+          padding: 20px;
+          position: absolute;
+      }
+
+      .speech-bubble .arrow {
+          border-style: solid;
+          position: absolute;
+      }
+
+      .bottom {
+          border-color: #c8c8c8 transparent transparent transparent;
+          border-width: 8px 8px 0px 8px;
+          bottom: -8px;
+      }
+
+      .bottom:after {
+          border-color: #f8f8f8 transparent transparent transparent;
+          border-style: solid;
+          border-width: 7px 7px 0px 7px;
+          bottom: 1px;
+          content: "";
+          position: absolute;
+          left: -7px;    
+      }
+      
+      .help-tip{
+       display: inline-block;
+       background-color: #444;
+       text-align: center;
+       border-radius: 50%;
+       width: 14px;
+       height: 14px;
+       font-size: 12px;
+       cursor: default;
+      }
+
+      .help-tip:before{
+       content:'?';
+       font-weight: bolder;
+       color:#fff;
+      }
+
+      .help-tip:hover p{
+       display:table;
+       position: relative;
+       transform-origin: 100% 0%;
+       -webkit-animation: fadeIn 0.3s ease-in-out;
+       animation: fadeIn 0.3s ease-in-out;
+
+      }
+
+      .help-tip p{ 
+
+       display: none;
+       text-align: left;
+       background-color: #1E2021;
+       padding: 20px;
+       width: 300px;
+       border-radius: 3px;
+       box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+       right: -4px;
+       color: #FFF;
+       font-size: 16px;
+       line-height: 1.4;
+      }
+
+      .help-tip p:after{
+       width:100%;
+       height:40px;
+       content:'';
+       position: absolute;
+       top:-40px;
+       left:0;
+      }
+
+      @-webkit-keyframes fadeIn {
+       0% { 
+        opacity:0; 
+        transform: scale(0.6);
+       }
+
+       100% {
+        opacity:100%;
+        transform: scale(1);
+       }
+      }
+
+      @keyframes fadeIn {
+       0% { opacity:0; }
+       100% { opacity:100%; }
+      }
+
+      .d3-tip {
+      line-height: 1;
+      font-weight: bold;
+      padding: 12px;
+      background: rgba(200, 200, 200, 0.7);
+      color: #000000;
+      border-radius: 2px;
+      }
+
+      /* Creates a small triangle extender for the tooltip */
+      .d3-tip:after {
+      box-sizing: border-box;
+      display: inline;
+      font-size: 10px;
+      width: 100%;
+      line-height: 1;
+      color: rgba(200, 200, 200, 0.7);
+      content: "\25BC";
+      position: absolute;
+      text-align: left;
+      }
+
+      /* Style northward tooltips differently */
+      .d3-tip.n:after {
+      margin: -1px 0 0 0;
+      top: 100%;
+      left: 0;
+      }
+
+      #filterButton {
+        background-color: rgba(0, 0, 0, 0);
+        border: none;
+        color: grey;
+        padding: 1px 1px;
+        text-align: bottom;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 40px;
+        font-weight: bold;
+        margin: 1px 1px;
+        cursor: pointer;
+      }
+
+
+
+    </style>
+
+  </head>
+  <body>
+        <!-- Navbar (sit on top) -->
+      <div class="w3-top">
+        <div class="w3-bar w3-white w3-wide w3-padding-8 w3-card-2">
+          <a href="#home" class="w3-margin-left w3-bar-item w3-button"><b><font color =#f44336>Social data</font></b> analysis and visualization</a>
+          <!-- Float links to the right. Hide them on small screens -->
+          <div class="w3-right w3-hide-small">
+            <a href="#graph" class="w3-bar-item w3-button">Graphs</a>
+            <a href="#"  id="download" class="w3-bar-item w3-button"> Download Dataset</a>
+            <a href="explainer.html" class="w3-bar-item w3-button">Explainer</a>
+          </div>
+        </div>
+      </div>
+      <br><br>
+    <!-- Page content -->
+  <div class="w3-content w3-padding" style="max-width:1800px">
+      
+    <div class="w3-container w3-padding-32" id="Partone">
+      <h3 class="w3-border-bottom w3-border-light-grey w3-padding-12">London accidents</h3>
+        <p>An increasing number of cities around europe is at the point where traffic in the cities are reaching peak levels, as the traffic increases so does the strain on the road infrastructure. As this issue grows, the more inhabitants begin looking for alternative means of transport in comparison to the car. In major cities this quite often results in large increases in bike traffic and pedestrians around the cities. <br> <br>
+
+        This in itself presents issues between the interactions of drivers and soft-targets, at times resulting in fatal encounters and interactions. Europe's biggest city London has been dealing with this issue for many years. As people experience more and more accidents in their everyday life, more and more people call for changes to increase safety. This further results in people suggesting innovative and creative solutions to resolving the issue.  The city leadership has fortunately been aware of this issue and has aimed to reduce the numbers of traffic accidents substantially. In between the years 2010 and 2014 the number of serious and fatal injuries related to traffic accidents went down by 28.09%. This overall signifies a positive trend seen in recent years, and show that the approaches the city has presented  to reduce road casualties is in fact working.<br> <br>
+
+        As a forerunner, more cities might look towards how London has dealt with these issues for inspiration and adapt these to their own needs. Below the user may explore a geographic map of London detailing the accidents around the city, exploring the locations, time and vehicles involved with these accidents. Initially shown is the trend of these accidents and we emplore the user to play around with this data. In order to ease the reader into the data, the user may draw important info from the annotations below: <br> <br>
+        Tips:
+        <ul>
+        <li>You can select certain parts of the timeline or map in order to highlight groups of accidents to explore the vehicles involved, the time of day and the yearly trend.</li>
+        <li>You can hover over an accident to see a tooltip of that accident.</li>
+        <li>You can select certain criteria of the data to highlight.</li>
+        </ul><br>
+
+Sources:<br>
+http://content.tfl.gov.uk/safe-streets-for-london.pdf<br>
+http://londonroadsafetycouncil.org.uk/london-ksis-fall-to-record-low-despite-rise-in-fatalities/<br>
+http://content.tfl.gov.uk/cycle-safety-action-plan.pdf<br>
+https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-london-continue-to-fall-but-concerns-remain-about-motorbike-collisions<br>
+
+        </p>
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Filtering <button id="filterButton" onclick="filterButtonFunction()">+</button></h5>
+
+        <div class="w3-container w3-padding-32" id="filterLocation" style="display: none">
+          <button id="applyFilterButton" onclick="applyFilterFunction()">Apply</button>
+          <button id="resetFilterButton" onclick="resetFilterFunction()">Reset to default</button>
+          <div>
+          <div style="width: 300px; float: left">
+            <h6 class="w3-border-bottom w3-border-light-grey w3-padding-12">Sex</h6>
+            <input id="Sex 1" name="filterBox" type="checkbox" value="Male" checked="true">Male<br>
+            <input id="Sex 2" name="filterBox" type="checkbox" value="Female" checked="true">Female<br>
+          </div>
+          <div style="width: 250px; float: left">
+            <h6 class="w3-border-bottom w3-border-light-grey w3-padding-12">Age</h6>
+            <input id="Age 1" name="filterBox" type="checkbox" value="0-10" checked="true">0-10<br>
+            <input id="Age 2" name="filterBox" type="checkbox" value="11-20" checked="true">11-20<br>
+            <input id="Age 3" name="filterBox" type="checkbox" value="21-30" checked="true">21-30<br>
+            <input id="Age 4" name="filterBox" type="checkbox" value="31-40" checked="true">31-40<br>
+            <input id="Age 5" name="filterBox" type="checkbox" value="41-50" checked="true">41-50<br>
+            <input id="Age 6" name="filterBox" type="checkbox" value="51-60" checked="true">51-60<br>
+            <input id="Age 7" name="filterBox" type="checkbox" value="61-70" checked="true">61-70<br>
+            <input id="Age 8" name="filterBox" type="checkbox" value="71-80" checked="true">71-80<br>
+            <input id="Age 9" name="filterBox" type="checkbox" value="81-90" checked="true">81-90<br>
+            <input id="Age 10" name="filterBox" type="checkbox" value="91-100" checked="true">91-100<br>
+            <input id="Age 10" name="filterBox" type="checkbox" value="unknown" checked="true">unknown<br>
+          </div>
+          <div style="width: 250px; float: left">
+            <h6 class="w3-border-bottom w3-border-light-grey w3-padding-12">Severity of casualty</h6>
+            <input id="Severity_of_casualty 1" name="filterBox" type="checkbox" value="Fatal" checked="true">Fatal<br>
+            <input id="Severity_of_casualty 2" name="filterBox" type="checkbox" value="Serious" checked="true">Serious<br>
+          </div>
+          <div style="width: 250px; float: left">
+            <h6 class="w3-border-bottom w3-border-light-grey w3-padding-12">Casualty Class</h6>
+            <input id="Casualty_Class 1" name="filterBox" type="checkbox" value="Pedestrian" checked="true">Pedestrian<br>
+            <input id="Casualty_Class 2" name="filterBox" type="checkbox" value="Driver or rider" checked="true">Driver or rider<br>
+            <input id="Casualty_Class 3" name="filterBox" type="checkbox" value="Passenger" checked="true">Passenger<br>
+          </div>
+          <div style="width: 250px; float: left">
+            <h6 class="w3-border-bottom w3-border-light-grey w3-padding-12">Day</h6>
+            <input id="Day 1" name="filterBox" type="checkbox" value="Monday" checked="true">Monday<br>
+            <input id="Day 2" name="filterBox" type="checkbox" value="Tuesday" checked="true">Tuesday<br>
+            <input id="Day 3" name="filterBox" type="checkbox" value="Wednesday" checked="true">Wednesday<br>
+            <input id="Day 4" name="filterBox" type="checkbox" value="Thursday" checked="true">Thursday<br>
+            <input id="Day 5" name="filterBox" type="checkbox" value="Friday" checked="true">Friday<br>
+            <input id="Day 6" name="filterBox" type="checkbox" value="Saturday" checked="true">Saturday<br>
+            <input id="Day 7" name="filterBox" type="checkbox" value="Sunday" checked="true">Sunday<br>
+          </div>
+          <div style="width: 400px; float: left">
+            <h6 class="w3-border-bottom w3-border-light-grey w3-padding-12">Vehicle type</h6>
+            <input id="Vehicle_type 1" name="filterBox" type="checkbox" value="Bus or coach (17 or more pass seats)" checked="true">Bus or coach (17 or more pass seats)<br>
+            <input id="Vehicle_type 2" name="filterBox" type="checkbox" value="Car" checked="true">Car<br>
+            <input id="Vehicle_type 3" name="filterBox" type="checkbox" value="Goods_3.5_tonnes_maximum_gross_weight_or_under" checked="true">Goods 3.5 tonnes maximum gross weight or under<br>
+            <input id="Vehicle_type 4" name="filterBox" type="checkbox" value="Goods 7.5 tonnes mgw and over" checked="true">Goods 7.5 tonnes mgw and over<br>
+            <input id="Vehicle_type 5" name="filterBox" type="checkbox" value="Goods 7.5 tonnes mgw and over (from 1999)" checked="true">Goods 7.5 tonnes mgw and over (from 1999)<br>
+            <input id="Vehicle_type 6" name="filterBox" type="checkbox" value="Goods over 3.5t. and under 7.5t. (from 1999)" checked="true">Goods over 3.5t. and under 7.5t. (from 1999)<br>
+            <input id="Vehicle_type 7" name="filterBox" type="checkbox" value="Goods over 3.5t and under 7.5t mgw" checked="true">Goods over 3.5t and under 7.5t mgw<br>
+            <input id="Vehicle_type 8" name="filterBox" type="checkbox" value="M/cycle over 50 and up to 125cc (from 1999)" checked="true">M/cycle over 50 and up to 125cc (from 1999)<br>
+            <input id="Vehicle_type 9" name="filterBox" type="checkbox" value="Minibus (8 - 16 passenger seats) (from 1999)" checked="true">Minibus (8 - 16 passenger seats) (from 1999)<br>
+            <input id="Vehicle_type 10" name="filterBox" type="checkbox" value="Minibus (8-16 passenger seats)" checked="true">Minibus (8-16 passenger seats)<br>
+            <input id="Vehicle_type 11" name="filterBox" type="checkbox" value="Moped" checked="true">Moped<br>
+            <input id="Vehicle_type 12" name="filterBox" type="checkbox" value="Motor cycle 125cc and under" checked="true">Motor cycle 125cc and under<br>
+            <input id="Vehicle_type 13" name="filterBox" type="checkbox" value="M/cycle over 50 and up to 125cc (from 1999)" checked="true">M/cycle over 50 and up to 125cc<br>
+            <input id="Vehicle_type 14" name="filterBox" type="checkbox" value="Motorcycle 50cc and under" checked="true">Motorcycle 50cc and under<br>
+            <input id="Vehicle_type 15" name="filterBox" type="checkbox" value="Motorcycle over 125cc and up to 500cc" checked="true">Motorcycle over 125cc and up to 500cc<br>
+            <input id="Vehicle_type 16" name="filterBox" type="checkbox" value="Motorcycle over 500cc" checked="true">Motorcycle over 500cc<br>
+            <input id="Vehicle_type 17" name="filterBox" type="checkbox" value="Other motor vehicle" checked="true">Other motor vehicle<br>
+            <input id="Vehicle_type 18" name="filterBox" type="checkbox" value="Other vehicle" checked="true">Other vehicle<br>
+            <input id="Vehicle_type 19" name="filterBox" type="checkbox" value="Pedal cycle" checked="true">Pedal cycle<br>
+            <input id="Vehicle_type 20" name="filterBox" type="checkbox" value="Ridden horse (from_1999)" checked="true">Ridden horse<br>
+            <input id="Vehicle_type 21" name="filterBox" type="checkbox" value="Taxi/Private hire car" checked="true">Taxi/Private hire car<br>
+            <input id="Vehicle_type 22" name="filterBox" type="checkbox" value="Van/Goods 3.5 tonnes mgw or under" checked="true">Van/Goods 3.5 tonnes mgw or under<br>
+          </div>   
+          </div>       
+        </div>
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accidents per weekday</h5>
+        <div class="w3-container w3-padding-32" id="barLocation"></div>
+      <div style="width: 1000px; float:left">
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Geomap</h5>
+        <div class="w3-container w3-padding-32" id="graphLocation"></div>  
+      </div>
+      <div style="width: 650px; float:right">
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accidents Time of day <div class="help-tip"><p>This is the inline help tip! You can explain to your users what this section of your web app is about.</p></div> </h5>
+        <div class="w3-container w3-padding-32" id="pathLocation" style="position:relative;"></div>
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12"># Accidents vs Year <div class="help-tip"><p>This is the inline help tip! You can explain to your users what this section of your web app is about.</p></div> </h5>
+        <div class="w3-container w3-padding-32" id="pathLocation2" style="position:relative;"></div>
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accident distribution (top 6 vehicles involved)<div class="help-tip"><p>This is the inline help tip! You can explain to your users what this section of your web app is about.</p></div></h5>
+        <div class="w3-container w3-padding-32" id="doughnutlocation" style="position:relative;"></div>
+        
+      </div>
+    </div>
+  </div>
+      <script type="text/javascript">
+     
+      //Width and height for geomap
+      var w = 1000;
+      var h = 750;
+
+      //Height and width for donought chart
+      var w2 = 300;
+      var h2 = 300;
+
+      //Hight and width for barchart
+      var w3 = 1800;
+      var h3 = 200;
+
+      //Hight and width for pathchart
+      var w4 = 600;
+      var h4 = 200;
+
+      var padding = 50;
+      var parseTime = d3.timeParse("%m/%d/%Y");
+      if (typeof module!='undefined' && module.exports) var LatLon = require('./latlon-ellipsoidal.js');
+      //Insert data:
+      var dataset;
+      var resetData;
+
+      d3.csv("london-ksi-only-since2010.csv", function(error,data){
+        if(error){
+          console.log(error)
+        }else{
+          console.log(data);
+          dataset = data;
+          resetData = data;
+          barChart();
+          dognutchart(dataset);
+          geomap();
+          pathChart(dataset);
+          vTypeChart(dataset);
+        }
+      });
+
+//--------------------------------------------------------------------------------------------------
+// Geo Map
+//--------------------------------------------------------------------------------------------------
+    
+
+    var acciPoints = null;
+    var brushArea = null;
+    //Brush
+    var brushGeo = d3.brush();
+
+    //Define path generator, using the Albers USA projection
+    var projection  = d3.geoMercator()
+      .translate([w, h])
+      .center([0.39,51.267])
+      .scale(60000);
+    //Create SVG element        
+    var svgGeo = d3.select("#graphLocation")
+       .append("svg")
+       .attr("width", w)
+       .attr("height", h);
+
+    function geomap(){
+
+     svgGeo.selectAll("*").remove();
+
+     var color = d3.scaleOrdinal(["#C5E1A5","#AED581","#9CCC65","#8BC34A","#7CB342","#689F38","#558B2F","#33691E"]);
+              
+
+     var path = d3.geoPath().projection(projection );
+     
+     var moveAmount = 0.1;
+      
+      //Set x/y to zero for now
+     var x = 0.40;
+     var y = 51.25;
+     var zoom0 = 60000;
+     var zoom = 60000;
+
+      var x2 = d3.scaleLinear().range([0, w]),
+          y2 = d3.scaleLinear().range([h, 0]);
+
+      var xAxis = d3.axisTop(x2).tickFormat("").tickSize(0),
+          yAxis = d3.axisRight(y2).tickFormat("").tickSize(0);
+
+
+      //Load in GeoJSON data
+      d3.json("london.json", function(json) {
+        console.log("data loaded");
+        //Bind data and create one path per GeoJSON feature
+        svgGeo.selectAll("path")
+           .data(json.features)
+           .enter()
+           .append("path")
+           .attr("d", path)
+           .style("fill",function(d,i){
+            return color(i % 8);
+           })
+
+        acciPoints = svgGeo.selectAll("circle")
+        .data(dataset)
+        .enter()   
+        .append("circle")
+        .attr("cx", function(d){
+          return projection([d.Long,d.Lat])[0];
+        })
+        .attr("cy", function(d){
+          return projection([d.Long,d.Lat])[1];
+        })
+        .attr("r",4)
+        .style("fill",function(d){
+          return (d.Severity_of_casualty == "Fatal" ? "red" : "black")
+        })
+        .style("stroke","gray")
+        .style("stroke-width",0.25)
+        .style("opacity", 0.25);
+
+        svgGeo.append("g")
+          .attr("class", "axis axis--x")        
+          .call(customXAxis);
+
+        svgGeo.append("g")
+          .attr("class", "axis axis--y")
+          .call(customYAxis);
+
+        brushArea = svgGeo.append("g")
+          .attr("class", "brush")
+          .call(brushGeo.on("brush", Brushed))
+          .call(brushGeo.on("start", Brushed));
+
+        function customXAxis(g) {
+          g.call(xAxis);
+          g.select(".domain").remove();
+        }
+
+        function customYAxis(g) {
+          g.call(yAxis);
+          g.select(".domain").remove();
+        }
+
+        function Brushed() {
+          var s = d3.event.selection;
+          if (!s){
+            acciPoints
+            .style("fill",function(d){
+              return (d.Severity_of_casualty == "Fatal" ? "red" : "black")
+            });
+            pathChart(dataset);
+            vTypeChart(dataset);
+            dognutchart(dataset);
+          }
+          else{
+            acciPoints
+            .style("fill", function(d){
+              return (projection([d.Long, d.Lat])[0] > s[0][0] && projection([d.Long, d.Lat])[0] < s[1][0] && projection([d.Long, d.Lat])[1] < s[1][1] && projection([d.Long, d.Lat])[1] > s[0][1]? (d.Severity_of_casualty == "Fatal" ? "blue" : "white") : (d.Severity_of_casualty == "Fatal" ? "red" : "black"))
+            });
+            var brushData = dataset.filter(function(d){
+              return (projection([d.Long, d.Lat])[0] > s[0][0] && projection([d.Long, d.Lat])[0] < s[1][0] && projection([d.Long, d.Lat])[1] < s[1][1] && projection([d.Long, d.Lat])[1] > s[0][1])
+              });
+
+            pathChart(brushData);
+            vTypeChart(brushData);
+            dognutchart(brushData);
+          }
+
+        }
+
+        var select = d3.select('#filter_1')
+          .on('change',onchange)
+          .on('end', function(d){
+            acciPoints.exit();
+          });
+
+
+        function onchange() {
+          var sect = document.getElementById("filter_1");
+          var selectValue = sect.options[sect.selectedIndex].value;
+
+          acciPoints.data(dataset.filter(function(d){return (false)})).exit().remove();
+
+          acciPoints = svgGeo.selectAll("circle").data(dataset.filter(function(d){return d.Sex == selectValue})).enter().append("circle")
+          .attr("cx", function(d){
+            return projection([d.Long,d.Lat])[0];            
+        })
+        .attr("cy", function(d){
+            return projection([d.Long,d.Lat])[1];
+        })
+        .attr("r",4)
+        .style("fill",function(d){
+          return (d.Severity_of_casualty == "Fatal" ? "red" : "black")
+        })
+        .style("stroke","gray")
+        .style("stroke-width",0.25)
+        .style("opacity", 0.25);
+
+        brushArea.call(brushGeo.move, null);
+
+
+
+
+        //acciPoints.data(dataset.filter(function(d){ return d.Sex != selectValue})).remove();          
+        };
+         //Create panning buttons
+      var createPanButtons = function() {
+        //Create the clickable groups
+        //North
+        var north = svgGeo.append("g")
+          .attr("class", "pan") //All share the 'pan' class
+          .attr("id", "north"); //The ID will tell us which direction to head
+        north.append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", w)
+          .attr("height", 30);
+        north.append("text")
+          .attr("x", w/2)
+          .attr("y", 20)
+          .html("&uarr;")
+        
+        //South
+        var south = svgGeo.append("g")
+          .attr("class", "pan")
+          .attr("id", "south");
+        south.append("rect")
+          .attr("x", 0)
+          .attr("y", h - 30)
+          .attr("width", w)
+          .attr("height", 30);
+        south.append("text")
+          .attr("x", w/2)
+          .attr("y", h - 10)
+          .html("&darr;")
+        //West
+        var west = svgGeo.append("g")
+          .attr("class", "pan")
+          .attr("id", "west");
+        west.append("rect")
+          .attr("x", 0)
+          .attr("y", 30)
+          .attr("width", 30)
+          .attr("height", h - 60);
+        west.append("text")
+          .attr("x", 15)
+          .attr("y", h/2)
+          .html("&larr;")
+        //East
+        var east = svgGeo.append("g")
+          .attr("class", "pan")
+          .attr("id", "east");
+        east.append("rect")
+          .attr("x", w - 30)
+          .attr("y", 30)
+          .attr("width", 30)
+          .attr("height", h - 60);
+        east.append("text")
+          .attr("x", w - 15)
+          .attr("y", h/2)
+          .html("&rarr;")
+        //Panning interaction
+        d3.selectAll(".pan")
+          .on("click", function() {
+            //Set how much to move on each click
+            
+            //Which way are we headed?
+            var direction = d3.select(this).attr("id");
+            //Modify the offset, depending on the direction
+            switch (direction) {
+              case "north":
+                y += moveAmount * (zoom0/zoom);  //Increase y offset
+                break;
+              case "south":
+                y -= moveAmount * (zoom0/zoom);  //Decrease y offset
+                break;
+              case "west":
+                x -= moveAmount * (zoom0/zoom);  //Increase x offset
+                break;
+              case "east":
+                x += moveAmount * (zoom0/zoom);  //Decrease x offset
+                break;
+              default:
+                break;
+            }
+            //This triggers a zoom event, translating by x, y
+            //svg.transition()
+            //  .call(zoom.translateBy, x, y);
+            projection
+              .translate([w, h])
+              .center([x,y])
+              .scale(zoom)
+            svgGeo.selectAll("path")
+                .attr("d", path);
+                svgGeo.selectAll("circle")
+                .attr("cx", function(d){
+                  return projection([d.Long,d.Lat])[0];
+                })
+                .attr("cy", function(d){
+                  return projection([d.Long,d.Lat])[1];
+                });
+
+            console.log("Operation finished");
+          });
+      };
+      
+      //Create zoom buttons
+      var createZoomButtons = function() {
+        //Create the clickable groups
+        //Zoom in button
+        var zoomIn = svgGeo.append("g")
+          .attr("class", "zoom")  //All share the 'zoom' class
+          .attr("id", "in")   //The ID will tell us which direction to head
+          .attr("transform", "translate(" + (w - 110) + "," + (h - 70) + ")");
+        zoomIn.append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 30)
+          .attr("height", 30);
+        zoomIn.append("text")
+          .attr("x", 15)
+          .attr("y", 20)
+          .text("+");
+        
+        //Zoom out button
+        var zoomOut = svgGeo.append("g")
+          .attr("class", "zoom")
+          .attr("id", "out")
+          .attr("transform", "translate(" + (w - 70) + "," + (h - 70) + ")");
+        zoomOut.append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 30)
+          .attr("height", 30);
+        zoomOut.append("text")
+          .attr("x", 15)
+          .attr("y", 20)
+          .html("&ndash;");
+
+        //Reset
+        var zoomReset = svgGeo.append("g")
+          .attr("class", "zoom")
+          .attr("id", "reset")
+          .attr("transform", "translate(" + (w - 180) + "," + (h - 70) + ")");
+        zoomReset.append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 60)
+          .attr("height", 30);
+        zoomReset.append("text")
+          .attr("x", 30)
+          .attr("y", 20)
+          .html("Reset");
+
+
+        //Zooming interaction
+        d3.selectAll(".zoom")
+          .on("click", function() {
+            //Set how much to scale on each click
+            var scaleFactor;
+            
+            //Which way are we headed?
+            var direction = d3.select(this).attr("id");
+            //Modify the k scale value, depending on the direction
+            switch (direction) {
+              case "in":
+                if(zoom <= 200000){
+                  zoom += 10000;
+                }
+                //x -= 0.05;
+                //y -= 0.05;
+                break;
+              case "out":
+                if(zoom >= 20000){
+                  zoom -= 10000;
+                }
+                //x += 0.05;
+                //y += 0.05;
+                break;
+              default:
+                break;
+            }
+            //This triggers a zoom event, scaling by 'scaleFactor'
+            projection
+              .translate([w, h])
+              .center([x,y])
+              .scale(zoom)
+            svgGeo.selectAll("path")
+                .attr("d", path);
+                svgGeo.selectAll("circle")
+                .attr("cx", function(d){
+                  return projection([d.Long,d.Lat])[0];
+                })
+                .attr("cy", function(d){
+                  return projection([d.Long,d.Lat])[1];
+                });
+
+          });
+      };
+
+      createPanButtons();
+      createZoomButtons();
+      //Bind 'Reset' button behavior
+      d3.select("#reset")
+        .on("click", function() {
+      //Set how much to scale on each click
+            var scaleFactor;
+            
+            //Which way are we headed?
+            var direction = d3.select(this).attr("id");
+            //Modify the k scale value, depending on the direction
+            zoom = 60000;
+            //This triggers a zoom event, scaling by 'scaleFactor'
+            projection
+              .translate([w, h])
+              .center([0.39,51.267])
+              .scale(zoom)
+            svgGeo.selectAll("path")
+                .attr("d", path);
+                svgGeo.selectAll("circle")
+                .attr("cx", function(d){
+                  return projection([d.Long,d.Lat])[0];
+                })
+                .attr("cy", function(d){
+                  return projection([d.Long,d.Lat])[1];
+                });
+      });
+      //Bind 'download data' button behavior
+      d3.select("#download")
+        .on("click", function() {
+          var uri = "https://files.datapress.com/london/dataset/road-casualties-severity-borough/london-ksi-only-since2010.csv";
+          var name = "ksidata.csv";
+          var link = document.createElement("a");
+          link.download = name;
+          link.href = uri;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          delete link;
+      });
+      //Reset all graphs functionality
+      d3.select("#resetAllGraphs")
+        .on("click", function() {
+      });
+      });
+    }
+
+
+//--------------------------------------------------------------------------------------------------
+// Bar Chart
+//--------------------------------------------------------------------------------------------------
+        //Create SVG
+    var svgBar = d3.select("#barLocation")
+          .append("svg")
+          .attr("width", w3)
+          .attr("height", h3);
+    function barChart(){
+    svgBar.selectAll("*").remove();
+
+    var newData = dataset;
+    var parseTime = d3.timeParse("%d/%m/%Y");
+
+      var nested_data = d3.nest()
+      .key(function(d) { return d.Date; })
+      .rollup(function(leaves) { return leaves.length; })
+      .entries(dataset);
+      console.log(nested_data);
+
+    var xScale2 = d3.scaleTime()
+    .domain([d3.min(nested_data, function(d) { return parseTime(d.key); }), d3.max(nested_data, function(d) { return  parseTime(d.key); })])
+    .range([padding, w3 - padding * 2]);
+
+    var yScale2 = d3.scaleLinear()
+     .domain([0, d3.max(nested_data, function(d) { return d.value; })])
+     .range([h3 - padding,padding]);
+
+    var xAxis2 =  d3.axisBottom()
+      .scale(xScale2)
+      .tickFormat(d3.timeFormat("%Y"));
+
+    //Define Y axis
+    var yAxis2 = d3.axisLeft()
+      .scale(yScale2)
+      .ticks(5);
+
+    var brush = d3.brushX()
+        .extent([[padding,padding], [w3-padding*2,h3-padding]]);
+
+    //populate SVG
+    svgBar.selectAll("rect")
+      .data(nested_data)
+      .enter()
+      .append("rect")
+      .attr("x", function(d, i) {
+         return xScale2(parseTime(d.key));
+      })
+      .attr("y", function(d) {
+         return yScale2(d.value);
+      })
+      .attr("width", w3 / nested_data.length) 
+      .attr("height", function(d) {
+        return h3 - yScale2(d.value) - padding;
+      })
+      .attr("fill", function(d) {
+       return "rgb(0, 0, " + Math.round(d) + ")";
+      });
+    
+    //Add X axis
+    svgBar.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + (h3 - padding) + ")")
+      .call(xAxis2);
+    
+    //Add Y axis
+    svgBar.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + padding + ",0)")
+      .call(yAxis2);
+      // text label for the y axis
+    svgBar.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0)
+      .attr("x",0 - (h3 / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("# of casualties and injuries");
+
+    // text label for the x axis
+    svgBar.append("text")
+      .attr("x", (w3 / 2.3))             
+      .attr("y", h3/1.05)
+      .attr("text-anchor", "middle")  
+      .style("font-size", "16px") 
+      .text("Year");    
+
+    brushArea2 = svgBar.append("g")
+          .attr("class", "brush")
+          .call(brush.on("brush", Brushed))
+          .call(brush.on("end", BrushedEnd));
+
+        function customXAxis(g) {
+          g.call(xAxis);
+          g.select(".domain").remove();
+        }
+
+        function customYAxis(g) {
+          g.call(yAxis);
+          g.select(".domain").remove();
+        }
+
+    function BrushedEnd() {
+      var s = d3.event.selection;
+
+
+      if (!s){
+        dataset = newData;
+        brushArea.call(brushGeo.move, null);
+        acciPoints.data(dataset.filter(function(d){return (false)})).exit().remove();
+        acciPoints = svgGeo.selectAll("circle")
+         .data(dataset)
+         .enter()   
+         .append("circle")
+         .attr("cx", function(d){
+            return projection([d.Long,d.Lat])[0];
+          })
+          .attr("cy", function(d){
+            return projection([d.Long,d.Lat])[1];
+          })
+          .attr("r",4)
+          .style("fill",function(d){
+            return (d.Severity_of_casualty == "Fatal" ? "red" : "black")
+           })
+           .style("stroke","gray")
+           .style("stroke-width",0.25)
+           .style("opacity", 0.25);
+
+           pathChart(dataset);
+           vTypeChart(dataset);
+           dognutchart(dataset);
+       }
+    }
+
+  
+    function Brushed() {
+          var s = d3.event.selection;
+          brushArea.call(brushGeo.move, null);
+          dataset = newData;
+          var filterData = dataset.filter(function(d){
+            return (xScale2(parseTime(d.Date)) >= s[0] && xScale2(parseTime(d.Date)) <= s[1])
+          })
+
+          acciPoints.data(dataset.filter(function(d){return (false)})).exit().remove();
+          dataset = filterData;
+          acciPoints = svgGeo.selectAll("circle")
+         .data(dataset)
+         .enter()   
+         .append("circle")
+         .attr("cx", function(d){
+            return projection([d.Long,d.Lat])[0];
+          })
+          .attr("cy", function(d){
+            return projection([d.Long,d.Lat])[1];
+          })
+          .attr("r",4)
+          .style("fill",function(d){
+            return (d.Severity_of_casualty == "Fatal" ? "red" : "black")
+           })
+           .style("stroke","gray")
+           .style("stroke-width",0.25)
+           .style("opacity", 0.25);
+          
+          pathChart(dataset);
+          vTypeChart(dataset);
+          dognutchart(dataset);
+
+
+          
+        }
+
+
+    }
+
+//--------------------------------------------------------------------------------------------------
+// Doughnut chart
+//--------------------------------------------------------------------------------------------------
+      var w5 = 200;
+      var h5 = 200;
+      var svgDough = d3.select("#doughnutlocation")
+        .append('svg')
+        .attr('id',"doughnutsvg")
+        .attr('class', 'pie')
+        .attr('width', w5)
+        .attr('height', h5);
+
+      let legend = d3.select("#doughnutlocation").append('div')
+        .attr('class', 'legend')
+        .style('margin-top', '30px');
+
+      function dognutchart(dataset){
+      svgDough.selectAll("*").remove();
+      legend.selectAll("*").remove();
+      //process data
+      var nested_data = d3.nest()
+        .key(function(d) { 
+          return d.Vehicle_type; 
+        })
+        .rollup(function(leaves) { return leaves.length; })
+        .entries(dataset);
+
+      var sorted_data = nested_data.sort(function(x, y){
+        return d3.descending(x.value, y.value);
+      });
+      console.log("Hello" + sorted_data);
+
+      for(var i = 0; i < sorted_data.length; i++){
+        console.log("This" + sorted_data[i].value);
+        var datap = sorted_data[i];
+        if(i > 5){
+          console.log("removing data");
+          sorted_data.splice(i,1);
+          i--;
+        }else{
+          datap.key = datap.key.replace(new RegExp('_', 'gi'), ' ');
+
+        }
+      }
+
+      //Begin figure:
+      var text = "";
+      var padding = 10;
+      var opacity = .8;
+      var opacityHover = 1;
+      var onHover = .8;
+      var tooltipMargin = 13;
+
+      var radius = Math.min(w5-padding, h5-padding) / 2;
+      var color = d3.scaleOrdinal(d3.schemeCategory20c);
+
+      var g = svgDough.append('g')
+      .attr('transform', 'translate(' + (w5/2) + ',' + (h5/2) + ')');
+
+      var arc = d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius);
+
+      var pie = d3.pie()
+      .value(function(d) { return d.value; })
+      .sort(null);
+
+      var path = g.selectAll('path')
+        .data(pie(sorted_data))
+        .enter()
+        .append("g")  
+        .append('path')
+        .attr('d', arc)
+        .attr('fill', (d,i) => color(i))
+        .style('opacity', opacity)
+        .style('stroke', 'white')
+        .on("mouseover", function(d) {
+            d3.selectAll('path')
+              .style("opacity", onHover);
+            d3.select(this) 
+              .style("opacity", opacityHover);
+
+            let g = d3.select("#doughnutsvg")
+              .style("cursor", "pointer")
+              .append("g")
+              .attr("class", "tooltip")
+              .style("opacity", 0);
+       
+            g.append("text")
+              .attr("class", "name-text")
+              .text(`${d.data.key} (${d.data.value})`)
+              .attr('text-anchor', 'middle');
+          
+            let text = g.select("text");
+            let bbox = text.node().getBBox();
+            let padding = 2;
+            g.insert("rect", "text")
+              .attr("x", bbox.x - padding)
+              .attr("y", bbox.y - padding)
+              .attr("width", bbox.width + (padding*2))
+              .attr("height", bbox.height + (padding*2))
+              .style("fill", "white")
+              .style("opacity", 0.75);
+          })
+        .on("mousemove", function(d) {
+              let mousePosition = d3.mouse(this);
+              let x = mousePosition[0] + w5/2;
+              let y = mousePosition[1] + h5/2 - tooltipMargin;
+          
+              let text = d3.select('.tooltip text');
+              let bbox = text.node().getBBox();
+              if(x - bbox.width/2 < 0) {
+                x = bbox.width/2;
+              }
+              else if(w5 - x - bbox.width/2 < 0) {
+                x = w5 - bbox.width/2;
+              }
+          
+              if(y - bbox.height/2 < 0) {
+                y = bbox.height + tooltipMargin * 2;
+              }
+              else if(h5 - y - bbox.height/2 < 0) {
+                y = h5 - bbox.height/2;
+              }
+          
+              d3.select('.tooltip')
+                .style("opacity", 1)
+                .attr('transform',`translate(${x}, ${y})`);
+          })
+        .on("mouseout", function(d) {   
+            d3.select("#doughnutsvg")
+              .style("cursor", "none")  
+              .select(".tooltip").remove();
+          d3.selectAll('path')
+              .style("opacity", opacity);
+          })
+        .on("touchstart", function(d) {
+            d3.select("#doughnutsvg")
+              .style("cursor", "none");    
+        })
+        .each(function(d, i) { this._current = i; });
+
+      let keys = legend.selectAll('.key')
+            .data(sorted_data)
+            .enter().append('div')
+            .attr('class', 'key')
+            .style('display', 'flex')
+            .style('align-items', 'center')
+            .style('margin-right', '20px');
+
+          keys.append('div')
+            .attr('class', 'symbol')
+            .style('height', '10px')
+            .style('width', '10px')
+            .style('margin', '5px 5px')
+            .style('background-color', (d, i) => color(i));
+
+          keys.append('div')
+            .attr('class', 'name')
+            .text(d => `${d.key} (${d.value})`);
+
+          keys.exit().remove();
+
+
+        
+      }
+
+//--------------------------------------------------------------------------------------------------
+// Path chart
+//--------------------------------------------------------------------------------------------------
+    //Create SVG element
+    var svgPath = d3.select("#pathLocation")
+          .append("svg")
+          .attr("width", w4)
+          .attr("height", h4);
+    var datasetHours = [];
+    function pathChart(dataset){
+      
+      for(var i = 0; i < 24;i++){
+        datasetHours[i] = 0;
+      }
+      for(var i = 0; i < dataset.length;i++){
+        var n = parseInt(dataset[i].Hour);
+        datasetHours[n]++; 
+      }
+      console.log(datasetHours);
+      marathonChart();
+    }
+
+      var padding4 = 100;
+
+      function marathonChart(){
+
+      svgPath.selectAll("*").remove();
+
+      //Create scale functions
+      var xScale = d3.scaleLinear()
+                 .domain([0,23])
+                 .range([padding, w4 - padding * 2]);
+
+      var yScale = d3.scaleLinear()
+        .domain([0, d3.max(datasetHours, function(d) { return d; })])
+        .range([h4 - padding,padding]);
+
+      //Define X axis
+      var xAxis = d3.axisBottom()
+                .scale(xScale)
+                .ticks(24);
+
+      //Define Y axis
+      var yAxis = d3.axisLeft()
+                .scale(yScale)
+                .ticks(5);
+
+      var line = d3.line()
+              .x(function(d,i) { return xScale(i); })
+              .y(function(d) { return yScale(d); });
+
+      //Tooltip
+      var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 70])
+        .html(function(d) {
+          return "<strong>Accidents:</strong> <span style='color:blue'>" + d + "</span>";
+        })
+
+      svgPath.call(tip);
+
+      //Create circles
+      var men = svgPath.selectAll("circle")
+         .data(datasetHours)
+         .enter()
+         .append("circle")
+         .attr("cx", function(d,i) {
+            return xScale(i);
+         })
+         .attr("cy", function(d) {
+            return yScale(d);
+         })
+         .attr("r", 3.5)
+         .attr("fill-opacity", 0 )
+         .attr("stroke", "blue")
+         .attr("fill", "blue")
+         .on('mouseover', function(d, i){
+            tip.show(d);
+            acciPoints.style("opacity", function(b){
+              return (i != b.Hour ? 0 : 0.25)
+            });
+         })
+         .on('mouseout', function(d){
+            tip.hide(d);
+            acciPoints.style("opacity", 0.25);
+         });
+
+        svgPath.append("path")        
+          .attr("class", "lineM")
+          .attr("d", line(datasetHours))
+          .style("fill", "none")
+          .style("stroke", "blue");
+        //Create X axis
+        svgPath.append("g")
+          .attr("class", "xaxis")
+          .attr("transform", "translate(0," + (h4 - padding) + ")")
+          .call(xAxis);
+        
+        //Create Y axis
+        svgPath.append("g")
+          .attr("class", "yaxis")
+          .attr("transform", "translate(" + padding + ",0)")
+          .call(yAxis);
+
+
+        // text label for the y axis
+        svgPath.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0)
+          .attr("x",0 - (h4 / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("# of accidents");
+
+          // text label for the x axis
+          svgPath.append("text")
+            .attr("x", (w4 / 2.3))             
+            .attr("y", h4/1.05)
+            .attr("text-anchor", "middle")  
+            .style("font-size", "16px") 
+            .text("Time of day (hours)");   
+          }
+
+//--------------------------------------------------------------------------------------------------
+// Time vs Vehicle type
+//--------------------------------------------------------------------------------------------------
+    //Create SVG element
+    var svgType = d3.select("#pathLocation2")
+          .append("svg")
+          .attr("width", w4)
+          .attr("height", h4);
+
+    var datasetYear = [];
+    function vTypeChart(dataset){
+      
+      for(var i = 0; i < 5;i++){
+        console.log(i)
+        datasetYear[i] = 0;
+      }      
+      for(var i = 0; i < dataset.length;i++){
+        var dateString = dataset[i].Date.split("/")
+        var n = parseInt(dateString[2].split("")[3]);
+        datasetYear[n]++;        
+      }
+      console.log(datasetYear);
+      typeChart();
+    }
+
+      var padding4 = 100;
+
+      function typeChart(){
+
+      svgType.selectAll("*").remove();
+
+      //Create scale functions
+      var xScale = d3.scaleLinear()
+                 .domain([0,4])
+                 .range([padding, w4 - padding * 2]);
+
+      var yScale = d3.scaleLinear()
+        .domain([d3.min(datasetYear, function(d) { return d; })-10, d3.max(datasetYear, function(d) { return d; })+10])
+        .range([h4 - padding,padding]);
+
+      //Define X axis
+      var xAxis = d3.axisBottom()
+                .scale(xScale)
+                .tickFormat(function(d){ return d+2010})
+                .ticks(5);
+
+      //Define Y axis
+      var yAxis = d3.axisLeft()
+                .scale(yScale)
+                .ticks(5);
+
+      var line = d3.line()
+              .x(function(d,i) { return xScale(i); })
+              .y(function(d) { return yScale(d); });
+
+      //Tooltip
+      var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 70])
+        .html(function(d) {
+          return "<strong>Accidents:</strong> <span style='color:red'>" + d + "</span>";
+        })
+
+      svgType.call(tip);
+
+      //Create circles
+      var points = svgType.selectAll("circle")
+         .data(datasetYear)
+         .enter()
+         .append("circle")
+         .attr("cx", function(d,i) {
+            return xScale(i);
+         })
+         .attr("cy", function(d) {
+            return yScale(d);
+         })
+         .attr("r", 3.5)
+         .attr("fill-opacity", 0 )
+         .attr("stroke", "red")
+         .attr("fill", "red")
+         .on('mouseover', function(d, i){
+            tip.show(d);
+            acciPoints.style("opacity", function(b){
+              return (i != b.Date.split("/")[2].split("")[3] ? 0 : 0.25)
+            });
+         })
+         .on('mouseout', function(d){
+            tip.hide(d);
+            acciPoints.style("opacity", 0.25);
+         });
+
+        svgType.append("path")        
+          .attr("class", "lineM")
+          .attr("d", line(datasetYear))
+          .style("fill", "none")
+          .style("stroke", "red");
+        //Create X axis
+        svgType.append("g")
+          .attr("class", "xaxis")
+          .attr("transform", "translate(0," + (h4 - padding) + ")")
+          .call(xAxis);
+        
+        //Create Y axis
+        svgType.append("g")
+          .attr("class", "yaxis")
+          .attr("transform", "translate(" + padding + ",0)")
+          .call(yAxis);
+
+        // text label for the y axis
+        svgType.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0)
+          .attr("x",0 - (h4 / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("# of accidents");
+
+        // text label for the x axis
+        svgType.append("text")
+          .attr("x", (w4 / 2.3))             
+          .attr("y", h4/1.05)
+          .attr("text-anchor", "middle")  
+          .style("font-size", "16px") 
+          .text("Year");    
+      }     
+         
+            
+//--------------------------------------------------------------------------------------------------
+// Filtering
+//--------------------------------------------------------------------------------------------------
+  function filterButtonFunction() {
+    var x = document.getElementById("filterLocation");
+    var b = document.getElementById("filterButton");
+    if (x.style.display === "none") {
+        b.firstChild.data = "−"
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+        b.firstChild.data = "+"
+    }
+  }
+
+  function applyFilterFunction() {
+    dataset = resetData;
+    var f = document.getElementsByName("filterBox");
+    var sex = [];
+    var age = [];
+    var soc = [];
+    var cc = [];
+    var day = [];
+    var vt = [];    
+    for(i=0; i < f.length; i++){
+      if(f[i].checked == true){
+        switch(f[i].id.split(' ')[0]) {
+          case "Sex":
+            sex.push(f[i].value.replace(/ /g,"_"));
+            break;
+          case "Age":
+            if(f[i].value == "unknown"){
+              age.push(f[i].value);
+            }
+            else{
+              age.push(f[i].value.split('-'));
+            }
+            break;
+          case "Severity_of_casualty":
+            soc.push(f[i].value.replace(/ /g,"_"));
+            break;
+          case "Casualty_Class":
+            cc.push(f[i].value.replace(/ /g,"_"));
+            break;
+          case "Day":
+            day.push(f[i].value.replace(/ /g,"_"));
+            break;
+          case "Vehicle_type":
+            vt.push(f[i].value.replace(/ /g,"_"));
+            break;
+        }
+      }
+    }
+    
+    var test = 1;
+    dataset = dataset.filter(function(d){
+      test++;
+
+      var dAge = false;
+      for(i=0; i < age.length; i++){        
+        if(d.Age == age[i] || (parseInt(age[i][0]) <= parseInt(d.Age) && parseInt(age[i][1]) >= parseInt(d.Age))){
+          dAge = true;
+          break;          
+        }
+      }
+      return (sex.includes(d.Sex) && dAge && soc.includes(d.Severity_of_casualty) && cc.includes(d.Casualty_Class) && day.includes(d.Day) && vt.includes(d.Vehicle_type))
+    });
+
+    barChart(dataset);
+    dognutchart(dataset);
+    geomap();
+    pathChart(dataset);
+    vTypeChart(dataset);    
+  }
+
+  function resetFilterFunction(){
+    var f = document.getElementsByName("filterBox");
+    for(i=0; i < f.length; i++){
+      f[i].checked = true;
+    }
+    applyFilterFunction();
+  }
+
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+// Brush chart
+//--------------------------------------------------------------------------------------------------
+
+
+
+//--------------------------------------------------------------------------------------------------
+// Northing/Easting conversion
+//--------------------------------------------------------------------------------------------------
+
+      </script>
+  </body>
 </html>

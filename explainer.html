@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <title>London traffic accidents</title>
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/3/w3.css">
+      <script type="text/javascript" src="d3.js"></script>
+
+  </head>
+  <body>
+        <!-- Navbar (sit on top) -->
+      <div class="w3-top">
+        <div class="w3-bar w3-white w3-wide w3-padding-8 w3-card-2">
+          <a href="index.html" class="w3-margin-left w3-bar-item w3-button"><b><font color =#f44336>Social data</font></b> analysis and visualization</a>
+          <!-- Float links to the right. Hide them on small screens -->
+          <div class="w3-right w3-hide-small">
+            <a href="index.html" class="w3-bar-item w3-button">Graphs</a>
+            <a href="#graph" class="w3-bar-item w3-button">Explainer</a>
+          </div>
+        </div>
+      </div>
+      <br><br>
+    <!-- Page content -->
+  <div class="w3-content w3-padding" style="max-width:1800px">
+    <div class="w3-container w3-padding-32" id="Partone">
+      <h2 class="w3-border-bottom w3-border-light-grey w3-padding-12">London accidents</h2>
+<h2>Motivation</h2>
+<b><i>What is your dataset?</i></b><br> <br>
+Our dataset lists traffic accidents in the London area, since 2010. More over it covers accidents with the severity (fatal or seriously injured) between 2010 and 2014. <a href="https://data.london.gov.uk/dataset/road-casualties-severity-borough">London KSI data source.</a><br> <br>
+<b><i>Why did you choose this/these particular dataset(s)?</i></b><br> <br>
+During the time of the course, we the authors, are running a specialty course in traffic safety, and therefore this dataset is of particular interest as it allows us and the users to explore where, when and who are involved in the accidents. Lastly it  will also allow us to explore the trend of accidents over a period of years.<br> <br>
+The dataset itself was easily accessible with a fair amount of detail and number of accidents included. Other similar datasets often had a very limited pool of accidents, or less details. Therefore, this dataset was chosen as the more interesting among its peers. <br> <br>
+ <b><i>What was your goal for the end user’s experience?</i></b><br> <br>
+Specifically we want to highlight the positive aspects of the dataset namely that the number of serious accidents has been decreasing, this being our main narrative. <br> <br>
+Additionally, we wish to allow the user a high degree of interactivity in combination with  getting an overview of accidents in the form of a mapping and a timeline for our dataset. The user is then able to use the details on demand principle to explore the presented data further. This being in the form of brushing of either the timeline or geomap. Ideally to support this we want to allow the user to zoom in and hone in on areas around the city. Further we wish to aid the user in this exploration by providing some accident summaries, based on the data highlighted by the user. In this regard we took inspiration from the likes of <a href="https://www.geckoboard.com/">Geckoboards</a> in order to provide easy summaries for the statistics.  <br> <br>
+<h2>Basic stats. Let’s understand the dataset better</h2>
+<b><i>Write about your choices in data cleaning and preprocessing</i></b><br> <br>
+This dataset in particular is interesting as it does not provide conventional lat/long coordinates but rather uses something called northing/easting in its place. Here the reader might ponder what exactly northing & easting means and in relation to what. In this case the UK has been divided into something called the british national grid and theses coordinates are mapped according to the aforementioned northing/easting. A quite complex formula of translation exists, but would of course be heavy to be  run for every execution of the dataset. As such the easting/northing has been preprocessed to include lat/long. <a href="https://www.movable-type.co.uk/scripts/latlong-os-gridref.html"> Translating northing/easting to lat/long</a><br> <br>
+<b><i>Write a short section that discusses the dataset stats, containing key points/plots from your exploratory data analysis.</i></b><br> <br>
+Overall the accidents present in the dataset shows a decreasing number of accidents per year. This specifically shows the overall critical accidents being reduced by close to 1/3rd of the total incidents. Therefore, the quality of life improvements and educational campaigns in London seems to have a positive effect. Initially to explore this we created a simple plot taking the accident data and mapping the total accidents per year. We then dove deeper into the types of vehicles involved in the accidents and their individual trends. At this point we felt the strongest narrative point of the dataset was the overall positive trends in relation to the decreasing numbers of accidents. <br> <br>
+<h2>Genre. Which genre of data story did you use?</h2>
+The overall genre of our visualization is an interactive partition poster drawing in elements from the magazine style. We felt this overall supported the goals and narrative we wanted to present. Specifically, to show how the number of accidents decreased over time, thus elements of the magazine style where used in relation to the supporting text.  In general we felt the magazine style might be too limiting in relation to the level of interactivity we wished to achieve, therefore, the primary genre we went with was the partition poster. The interactive partition poster, we feel facilitales a lot of possibilities in the user creating his/her own sub-narrative in accidents, certain areas might break the overall downwards trend and have accidents due to other factors. Lastly we use the text bubbles style from the partition poster genre to highlight certain points from our supporting magazine style article text.<br> <br>
+<b><i>Which tools did you use from each of the 3 categories of Visual Narrative (Figure 7 in Segal and Heer). Why?</i></b><br> <br>
+In the visual structure category we only make use of a timebar, overall we felt this supported the other visualizations quite nicely. Especially as a supporting element allowing the users to brush certain areas of the timeline into focus, exploring them in more detail. In terms of highlighting, our visualization allows for zooming as this allows the user to more easily select areas of interest, as well as highlighting data otherwise stuck in larger clusters of accidents . In the area of transition guiding, we allow for viewer motion, as otherwise the user may not make full use of the zooming ability previously mentioned.<br> <br>
+<b><i>Which tools did you use from each of the 3 categories of Narrative Structure (Figure 7 in Segal and Heer). Why?</i></b><br> <br>
+In the narrative structure category we make use of a substantial subset of tools. The ordering is based on the user directed path, as the user is fully in control of the path he/she traverses and plays around with the data. Further in terms of interactivity we support; Highlighting of details (Tooltips for accidents), filtering/selection (in terms of brushes), navigation (zoom/ map traversal), explicit instructions (in terms of tips) and stimulating default views (A reset button). An important wish for us was for the data to highlight the key points of the article, and thus a reset button becomes keenly necessary. However as our second key point is a high degree of interactivity and exploration, the remaining elements support this goal, especially map traversal and zoom. Logically this makes the visualizations seem less approachable, and thus tips and instructions are a necessary addition to ease the user into being able to fully play around with the data.<br> <br>
+From the final category we use captions/headlines, annotations,summary/synthesis of the data and finally an accompanying article. We felt the true narrative of the dataset was showing the effect of measures taken by the city leadership, and that showing positive trend should be at the forefront of our visualizations, therefore we felt an article explaining this narrative was appropriate. Capitations/headlines and annotations are there to support/highlight these key points to the reader. Finally we felt a type of summary statistics or synthesis of the dataset was necessary as the raw data itself on the geomap would otherwise be overwhelming to the user. Rather by using this synthesis and having the geomap act as a selector, the data would become more approachable.<br> <br>
+<h2>Visualizations</h2>
+<b><i>Explain the visualizations you’ve chosen.</i></b><br> <br>
+Overall the summary statistics help highlight the key narrative points by showing these in an easy manner. Our timeline and geomap support these constructs by enabling a great deal of interactivity. Overall the timeline is useful for showing when the accidents happen. The geomap where they happen, and the summary statistics enabling us to show the trends and which vehicles are involved. Further the geomap also allows us to map accidents by colors, in such a way we can distinguish between fatal accidents and non fatal ones.  <br> <br>
+<b><i>Why are they right for the story you want to tell?</i></b><br> <br>
+The user can choose to explore the trend across certain regions of the city and further select certain periods of time. This allows the user to explore as little or as much of the dataset as they wish, diving deeping into the distribution and trends presented.
+<h2>Discussion. Think critically about your creation</h2>
+<b><i>What went well?,</i></b><br> <br>
+Overall d3 provided an ease to use platform for the creation of plots for our given dataset, this allowed us to easily create interconnected and interactive visualizations with supporting text. Further traffic data from especially the UK government was easy to locate as they in recent years have disclosed a significant amount of data to the public. The dataset used was also easy to approach in terms of meaning and data present. <br> <br>
+<b><i>What is still missing? What could be improved?, Why?</i></b><br><br>
+The dataset could have provided more details about individual accidents, such as the cause, whether conditions etc. Had such data been present we may have been able to create a different narrative with more focus on the cause of accidents, rather than our current narrative.<br> <br>
+The dataset could have been more clear as it had two columns, Casualty_Class and Pedestrian_Locality, that were unambiguous as they contradicted each other. If it said “Pedestrian” in the Casualty_Class column it would, in many cases, say “Not_a_pedestrian” in the Pedestrian_Locality column, so it was unclear if there was or was not a pedestrian in the given accident.<br> <br>
+The greatest point of improvement is probably the narrative, while initially the dataset seemed promising in terms of our goals, further exploration and analysis showed significant gaps in terms of the stories we could tell. This also resulted in a significant pivot towards the middle of the project, as we changed the focus of the visualizations to explore in greater detail the types of accidents and the different trends of theses. This was done in an attempt to move the visualizations closer to the overarching narrative we wanted to build, thus several summary statistics envisioned in the previous pilot assignment (Final project part A) was removed and replaced with more interesting summaries, focusing on the types of vehicles, rather than statistics such as age and severity. <br> <br>
+<h2>Who did what:</h2>
+Dan: Initial creation of pagesetup, geomap (zoom/navigation), path charts, pie chart and timeline, explainer page and visualization story.<br> <br>
+
+Thomas: Preprocessing of data, adding accident data to geomap, Brushes geomap and timeline, colors on the geomap, filter selection, # accidents vs year chart. <br> <br>
+
+While the individual responsible is listed above, it should be noted both group members contributed to each listed implementation.<br> <br>
+
+      </div>
+    </div>
+  </body>
+</html>
