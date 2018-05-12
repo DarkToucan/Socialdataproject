@@ -7,7 +7,17 @@
       <script type="text/javascript" src="d3.js"></script>
       <script type="text/javascript" src="d3-tip.js"></script>
       <style type="text/css">
-      
+
+      html {
+        overflow: auto;
+      }
+      #pageDiv {
+        position: absolute;
+        overflow: hidden;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
       .pan rect,
       .zoom rect {
         fill: black;
@@ -215,7 +225,7 @@
       </div>
       <br><br>
     <!-- Page content -->
-  <div class="w3-content w3-padding" style="max-width:1800px">
+  <div class="w3-content w3-padding" id=pageDiv style="max-width:1800px;">
       
     <div class="w3-container w3-padding-32" id="Partone">
       <h3 class="w3-border-bottom w3-border-light-grey w3-padding-12">London accidents</h3>
@@ -227,11 +237,14 @@
         Tips:
         <ul>
         <li>You can select certain parts of the timeline or map in order to highlight groups of accidents to explore the vehicles involved, the time of day and the yearly trend.</li>
-        <li>You can hover over an accident to see a tooltip of that accident.</li>
-        <li>You can select certain criteria of the data to highlight.</li>
+        <li>You can hover over points in the rightside visualizations to highlight the accidents</li>
+        <li>You can select certain criteria of the data to highlight in the filter section.</li>
+        <li>Hover on the "?" marks to see section default annotations.</li>
+        <li>The graphs are processing alot of data so lag might occur at times. Please be patient.</li>        
         </ul><br>
 
 Sources:<br>
+<a href="https://data.london.gov.uk/dataset/road-casualties-severity-borough">London KSI data source.</a><br>
 http://content.tfl.gov.uk/safe-streets-for-london.pdf<br>
 http://londonroadsafetycouncil.org.uk/london-ksis-fall-to-record-low-despite-rise-in-fatalities/<br>
 http://content.tfl.gov.uk/cycle-safety-action-plan.pdf<br>
@@ -290,11 +303,7 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
             <input id="Vehicle_type 2" name="filterBox" type="checkbox" value="Car" checked="true">Car<br>
             <input id="Vehicle_type 3" name="filterBox" type="checkbox" value="Goods_3.5_tonnes_maximum_gross_weight_or_under" checked="true">Goods 3.5 tonnes maximum gross weight or under<br>
             <input id="Vehicle_type 4" name="filterBox" type="checkbox" value="Goods 7.5 tonnes mgw and over" checked="true">Goods 7.5 tonnes mgw and over<br>
-            <input id="Vehicle_type 5" name="filterBox" type="checkbox" value="Goods 7.5 tonnes mgw and over (from 1999)" checked="true">Goods 7.5 tonnes mgw and over (from 1999)<br>
-            <input id="Vehicle_type 6" name="filterBox" type="checkbox" value="Goods over 3.5t. and under 7.5t. (from 1999)" checked="true">Goods over 3.5t. and under 7.5t. (from 1999)<br>
             <input id="Vehicle_type 7" name="filterBox" type="checkbox" value="Goods over 3.5t and under 7.5t mgw" checked="true">Goods over 3.5t and under 7.5t mgw<br>
-            <input id="Vehicle_type 8" name="filterBox" type="checkbox" value="M/cycle over 50 and up to 125cc (from 1999)" checked="true">M/cycle over 50 and up to 125cc (from 1999)<br>
-            <input id="Vehicle_type 9" name="filterBox" type="checkbox" value="Minibus (8 - 16 passenger seats) (from 1999)" checked="true">Minibus (8 - 16 passenger seats) (from 1999)<br>
             <input id="Vehicle_type 10" name="filterBox" type="checkbox" value="Minibus (8-16 passenger seats)" checked="true">Minibus (8-16 passenger seats)<br>
             <input id="Vehicle_type 11" name="filterBox" type="checkbox" value="Moped" checked="true">Moped<br>
             <input id="Vehicle_type 12" name="filterBox" type="checkbox" value="Motor cycle 125cc and under" checked="true">Motor cycle 125cc and under<br>
@@ -305,24 +314,24 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
             <input id="Vehicle_type 17" name="filterBox" type="checkbox" value="Other motor vehicle" checked="true">Other motor vehicle<br>
             <input id="Vehicle_type 18" name="filterBox" type="checkbox" value="Other vehicle" checked="true">Other vehicle<br>
             <input id="Vehicle_type 19" name="filterBox" type="checkbox" value="Pedal cycle" checked="true">Pedal cycle<br>
-            <input id="Vehicle_type 20" name="filterBox" type="checkbox" value="Ridden horse (from_1999)" checked="true">Ridden horse<br>
+            <input id="Vehicle_type 20" name="filterBox" type="checkbox" value="Ridden horse" checked="true">Ridden horse<br>
             <input id="Vehicle_type 21" name="filterBox" type="checkbox" value="Taxi/Private hire car" checked="true">Taxi/Private hire car<br>
             <input id="Vehicle_type 22" name="filterBox" type="checkbox" value="Van/Goods 3.5 tonnes mgw or under" checked="true">Van/Goods 3.5 tonnes mgw or under<br>
           </div>   
           </div>       
         </div>
-        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accidents per weekday</h5>
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accidents per weekday <div class="help-tip"><p>A timeline showing the daily number of accidents for each year. Here you can brush over a specific period to bring it into focus.</p></div></h5>
         <div class="w3-container w3-padding-32" id="barLocation"></div>
       <div style="width: 1000px; float:left">
-        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Geomap</h5>
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Geomap <div class="help-tip"><p>A map showing accidents around London, fatal accidents shown in red. Here you can brush over a specific area to explore it further.</p></div></h5>
         <div class="w3-container w3-padding-32" id="graphLocation"></div>  
       </div>
       <div style="width: 650px; float:right">
-        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accidents Time of day <div class="help-tip"><p>This is the inline help tip! You can explain to your users what this section of your web app is about.</p></div> </h5>
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accidents Time of day <div class="help-tip"><p>As expected the accidents are well distributed during rush hours in the city.</p></div> </h5>
         <div class="w3-container w3-padding-32" id="pathLocation" style="position:relative;"></div>
-        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12"># Accidents vs Year <div class="help-tip"><p>This is the inline help tip! You can explain to your users what this section of your web app is about.</p></div> </h5>
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accidents per Year <div class="help-tip"><p>As can be seen from the below figure, the overall trend is skewered downwards, signaling a decrease in the number of accidents.</p></div> </h5>
         <div class="w3-container w3-padding-32" id="pathLocation2" style="position:relative;"></div>
-        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accident distribution (top 6 vehicles involved)<div class="help-tip"><p>This is the inline help tip! You can explain to your users what this section of your web app is about.</p></div></h5>
+        <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accident distribution (top 6 vehicles involved)<div class="help-tip"><p>The top contributors to accidents in the city are cars and cyclists.</p></div></h5>
         <div class="w3-container w3-padding-32" id="doughnutlocation" style="position:relative;"></div>
         
       </div>
@@ -455,7 +464,8 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
         brushArea = svgGeo.append("g")
           .attr("class", "brush")
           .call(brushGeo.on("brush", Brushed))
-          .call(brushGeo.on("start", Brushed));
+          .call(brushGeo.on("start", Brushed))
+          .call(brushGeo.on("end", Brushed));
 
         function customXAxis(g) {
           g.call(xAxis);
@@ -491,7 +501,6 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
             vTypeChart(brushData);
             dognutchart(brushData);
           }
-
         }
 
         var select = d3.select('#filter_1')
@@ -592,10 +601,11 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
             
             //Which way are we headed?
             var direction = d3.select(this).attr("id");
+            var yq = y;
             //Modify the offset, depending on the direction
             switch (direction) {
               case "north":
-                y += moveAmount * (zoom0/zoom);  //Increase y offset
+                y += moveAmount * (zoom0/zoom);  //Increase y offset                                
                 break;
               case "south":
                 y -= moveAmount * (zoom0/zoom);  //Decrease y offset
@@ -625,6 +635,8 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
                 .attr("cy", function(d){
                   return projection([d.Long,d.Lat])[1];
                 });
+
+            brushArea.call(brushGeo.move, null);
 
             console.log("Operation finished");
           });
@@ -721,6 +733,8 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
                   return projection([d.Long,d.Lat])[1];
                 });
 
+            brushArea.call(brushGeo.move, null);
+
           });
       };
 
@@ -750,6 +764,7 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
                 .attr("cy", function(d){
                   return projection([d.Long,d.Lat])[1];
                 });
+            brushArea.call(brushGeo.move, null);
       });
       //Bind 'download data' button behavior
       d3.select("#download")
@@ -763,10 +778,6 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
           link.click();
           document.body.removeChild(link);
           delete link;
-      });
-      //Reset all graphs functionality
-      d3.select("#resetAllGraphs")
-        .on("click", function() {
       });
       });
     }
@@ -999,15 +1010,16 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
       var onHover = .8;
       var tooltipMargin = 13;
 
-      var radius = Math.min(w5-padding, h5-padding) / 2;
-      var color = d3.scaleOrdinal(d3.schemeCategory20c);
+      //var radius = Math.min(w5-padding, h5-padding) / 2;
+      var color1 = d3.scaleOrdinal(d3.schemeCategory20c);
 
       var g = svgDough.append('g')
       .attr('transform', 'translate(' + (w5/2) + ',' + (h5/2) + ')');
-
+      var outerRadius = Math.min(w5-padding, h5-padding) / 2;
+      var innerRadius = Math.min(w5-padding, h5-padding) / 3;
       var arc = d3.arc()
-      .innerRadius(0)
-      .outerRadius(radius);
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius);
 
       var pie = d3.pie()
       .value(function(d) { return d.value; })
@@ -1019,7 +1031,7 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
         .append("g")  
         .append('path')
         .attr('d', arc)
-        .attr('fill', (d,i) => color(i))
+        .attr('fill', (d,i) => color1(i))
         .style('opacity', opacity)
         .style('stroke', 'white')
         .on("mouseover", function(d) {
@@ -1029,7 +1041,6 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
               .style("opacity", opacityHover);
 
             let g = d3.select("#doughnutsvg")
-              .style("cursor", "pointer")
               .append("g")
               .attr("class", "tooltip")
               .style("opacity", 0);
@@ -1049,6 +1060,10 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
               .attr("height", bbox.height + (padding*2))
               .style("fill", "white")
               .style("opacity", 0.75);
+
+            acciPoints.style("opacity", function(b){
+              return (d.data.key.replace(/ /g,"_") != b.Vehicle_type ? 0 : 0.25)
+            });
           })
         .on("mousemove", function(d) {
               let mousePosition = d3.mouse(this);
@@ -1077,15 +1092,11 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
           })
         .on("mouseout", function(d) {   
             d3.select("#doughnutsvg")
-              .style("cursor", "none")  
               .select(".tooltip").remove();
-          d3.selectAll('path')
+            d3.selectAll('path')
               .style("opacity", opacity);
+            acciPoints.style("opacity", 0.25);
           })
-        .on("touchstart", function(d) {
-            d3.select("#doughnutsvg")
-              .style("cursor", "none");    
-        })
         .each(function(d, i) { this._current = i; });
 
       let keys = legend.selectAll('.key')
@@ -1101,7 +1112,7 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
             .style('height', '10px')
             .style('width', '10px')
             .style('margin', '5px 5px')
-            .style('background-color', (d, i) => color(i));
+            .style('background-color', (d, i) => color1(i));
 
           keys.append('div')
             .attr('class', 'name')
@@ -1445,20 +1456,6 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
     }
     applyFilterFunction();
   }
-
-
-
-
-
-//--------------------------------------------------------------------------------------------------
-// Brush chart
-//--------------------------------------------------------------------------------------------------
-
-
-
-//--------------------------------------------------------------------------------------------------
-// Northing/Easting conversion
-//--------------------------------------------------------------------------------------------------
 
       </script>
   </body>
