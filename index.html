@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="min-width:1920px;margin: 0 auto; overflow-x:scroll;">
   <head>
       <meta charset="utf-8">
       <title>London traffic accidents</title>
@@ -7,16 +7,6 @@
       <script type="text/javascript" src="d3.js"></script>
       <script type="text/javascript" src="d3-tip.js"></script>
       <style type="text/css">
-
-      html {
-        overflow: auto;
-      }
-      #pageDiv {
-        position: absolute;
-        overflow: hidden;
-        left: 50%;
-        transform: translateX(-50%);
-      }
 
       .pan rect,
       .zoom rect {
@@ -333,7 +323,7 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
         <div class="w3-container w3-padding-32" id="pathLocation2" style="position:relative;"></div>
         <h5 class="w3-border-bottom w3-border-light-grey w3-padding-12">Accident distribution (top 6 vehicles involved)<div class="help-tip"><p>The top contributors to accidents in the city are cars and cyclists.</p></div></h5>
         <div class="w3-container w3-padding-32" id="doughnutlocation" style="position:relative;"></div>
-        
+        <iframe id="frame1" style="display:none"></iframe>  
       </div>
     </div>
   </div>
@@ -769,15 +759,9 @@ https://tfl.gov.uk/info-for/media/press-releases/2016/june/road-casualties-in-lo
       //Bind 'download data' button behavior
       d3.select("#download")
         .on("click", function() {
-          var uri = "https://files.datapress.com/london/dataset/road-casualties-severity-borough/london-ksi-only-since2010.csv";
-          var name = "ksidata.csv";
-          var link = document.createElement("a");
-          link.download = name;
-          link.href = uri;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          delete link;
+          console.log("in download")
+          var iframe =  document.getElementById("frame1");
+          iframe .src = "london-ksi-only-since2010.csv";
       });
       });
     }
